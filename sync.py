@@ -20,6 +20,7 @@ load_dotenv(Path(__file__).resolve().parent / ".env")
 
 ACTOR_RUN_URL = "https://api.apify.com/v2/acts/thirdwatch~bookmyshow-scraper/runs"
 ACTOR_RUN_TIMEOUT_SECONDS = int(os.getenv("BOOKYOURSHOW_RUN_TIMEOUT_SECONDS", "600"))
+HTTP_REQUEST_TIMEOUT_SECONDS = int(os.getenv("BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS", "900"))
 DATA_PATH = Path(__file__).resolve().parent / "data" / "now_showing.json"
 
 
@@ -43,7 +44,7 @@ def _run_actor(city: str, max_results: int) -> dict[str, Any]:
             "mode": "movies",
             "queries": [city],
         },
-        timeout=240,
+        timeout=HTTP_REQUEST_TIMEOUT_SECONDS,
     )
     response.raise_for_status()
     run = response.json()
@@ -58,7 +59,7 @@ def _run_actor(city: str, max_results: int) -> dict[str, Any]:
         poll_response = requests.get(
             f"https://api.apify.com/v2/actor-runs/{run_id}",
             params={"token": _token(), "waitForFinish": "60"},
-            timeout=90,
+            timeout=HTTP_REQUEST_TIMEOUT_SECONDS,
         )
         poll_response.raise_for_status()
         run = poll_response.json()
@@ -83,7 +84,7 @@ def sync_movies(city: str, max_results: int) -> dict[str, Any]:
     items_response = requests.get(
         f"https://api.apify.com/v2/datasets/{dataset_id}/items",
         params={"token": _token(), "clean": "true", "format": "json"},
-        timeout=120,
+        timeout=HTTP_REQUEST_TIMEOUT_SECONDS,
     )
     items_response.raise_for_status()
     items = [

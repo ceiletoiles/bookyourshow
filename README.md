@@ -12,6 +12,8 @@ Optional settings:
 
 - `BOOKYOURSHOW_CITY` (default: `Bengaluru`)
 - `BOOKYOURSHOW_MAX_RESULTS` (default: `50`)
+- `BOOKYOURSHOW_RUN_TIMEOUT_SECONDS` (default: `600`)
+- `BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS` (default: `900`)
 - `BOOKYOURSHOW_SYNC_KEY` to protect the sync endpoint
 
 ## Run a snapshot

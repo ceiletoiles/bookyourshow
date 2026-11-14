@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:application --bind 0.0.0.0:$PORT --workers 1 --timeout 300
+    startCommand: gunicorn app:application --bind 0.0.0.0:$PORT --workers 1 --timeout 900
     envVars:
       - key: APIFY_API_TOKEN
         sync: false
@@ -12,5 +12,9 @@ services:
         value: "Bengaluru"
       - key: BOOKYOURSHOW_MAX_RESULTS
         value: "50"
+      - key: BOOKYOURSHOW_RUN_TIMEOUT_SECONDS
+        value: "600"
+      - key: BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS
+        value: "900"
       - key: BOOKYOURSHOW_SYNC_KEY
         sync: false
