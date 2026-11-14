@@ -1,0 +1,43 @@
+# BookYourShow Apify sync
+
+This folder owns the Apify integration for the MyFilmPeople “Now showing”
+feature. It runs the `thirdwatch/bookmyshow-scraper` Actor in movie mode and
+stores a small JSON snapshot that MyFilmPeople can import.
+
+## Configuration
+
+Set `APIFY_API_TOKEN` in the environment. Never commit the token.
+
+Optional settings:
+
+- `BOOKYOURSHOW_CITY` (default: `Bengaluru`)
+- `BOOKYOURSHOW_MAX_RESULTS` (default: `50`)
+- `BOOKYOURSHOW_SYNC_KEY` to protect the sync endpoint
+
+## Run a snapshot
+
+```powershell
+python sync.py --city Bengaluru --max-results 50
+```
+
+The output is written to `data/now_showing.json`.
+
+On Windows, start the local API with Waitress after installing the requirements:
+
+```powershell
+waitress-serve --listen=127.0.0.1:8001 app:application
+```
+
+## HTTP service
+
+The WSGI application in `app.py` exposes:
+
+- `GET /health`
+- `GET /api/now-showing?city=Bengaluru`
+- `POST /api/now-showing/sync` (requires `X-Sync-Key` when a key is configured)
+
+It can be served with Gunicorn:
+
+```powershell
+gunicorn app:application
+```

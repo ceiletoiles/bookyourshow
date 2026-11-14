@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bookyourshow-apify
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:application --bind 0.0.0.0:$PORT --workers 1 --timeout 300
+    envVars:
+      - key: APIFY_API_TOKEN
+        sync: false
+      - key: BOOKYOURSHOW_CITY
+        value: "Bengaluru"
+      - key: BOOKYOURSHOW_MAX_RESULTS
+        value: "50"
+      - key: BOOKYOURSHOW_SYNC_KEY
+        sync: false

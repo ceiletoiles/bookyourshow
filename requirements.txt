@@ -1,0 +1,4 @@
+requests==2.33.1
+gunicorn==23.0.0
+waitress==3.0.2
+python-dotenv==1.2.2
