@@ -23,12 +23,31 @@ ACTOR_RUN_TIMEOUT_SECONDS = int(os.getenv("BOOKYOURSHOW_RUN_TIMEOUT_SECONDS", "6
 HTTP_REQUEST_TIMEOUT_SECONDS = int(os.getenv("BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS", "900"))
 DATA_PATH = Path(__file__).resolve().parent / "data" / "now_showing.json"
 
+INDIAN_LANGUAGE_NAMES = {
+    "assamese", "bengali", "bodo", "dogri", "gujarati", "hindi", "kannada",
+    "konkani", "maithili", "malayalam", "manipuri", "marathi", "odia",
+    "punjabi", "sanskrit", "tamil", "telugu", "urdu",
+}
+
 
 def _token() -> str:
     value = os.getenv("APIFY_API_TOKEN", "").strip()
     if not value:
         raise RuntimeError("APIFY_API_TOKEN is not configured")
     return value
+
+
+def _is_non_indian_movie(item: dict[str, Any]) -> bool:
+    """Exclude listings whose BookMyShow language metadata identifies Indian cinema."""
+    languages = item.get("languages")
+    if not isinstance(languages, list):
+        return True
+    normalized = {
+        str(language).strip().casefold()
+        for language in languages
+        if str(language).strip()
+    }
+    return not normalized.intersection(INDIAN_LANGUAGE_NAMES)
 
 
 def _run_actor(city: str, max_results: int) -> dict[str, Any]:
@@ -90,12 +109,15 @@ def sync_movies(city: str, max_results: int) -> dict[str, Any]:
     items = [
         item
         for item in items_response.json()
-        if str(item.get("type") or "movie").strip().lower() == "movie"
+        if isinstance(item, dict)
+        and str(item.get("type") or "movie").strip().lower() == "movie"
+        and _is_non_indian_movie(item)
     ]
     snapshot = {
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "city": city,
         "mode": "movies",
+        "filters": {"non_indian_movies_only": True},
         "run_id": (run.get("data") or {}).get("id", ""),
         "dataset_id": dataset_id,
         "items": items,
@@ -108,7 +130,7 @@ def sync_movies(city: str, max_results: int) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--city", default=os.getenv("BOOKYOURSHOW_CITY", "Bengaluru"))
-    parser.add_argument("--max-results", type=int, default=int(os.getenv("BOOKYOURSHOW_MAX_RESULTS", "50")))
+    parser.add_argument("--max-results", type=int, default=int(os.getenv("BOOKYOURSHOW_MAX_RESULTS", "200")))
     args = parser.parse_args()
     snapshot = sync_movies(args.city, args.max_results)
     print(f"Saved {len(snapshot['items'])} movies for {snapshot['city']} to {DATA_PATH}")

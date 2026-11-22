@@ -35,7 +35,7 @@ def application(environ, start_response):
         if expected_key and supplied_key != expected_key:
             return _response(start_response, "401 Unauthorized", {"error": "Invalid sync key"})
         city = os.getenv("BOOKYOURSHOW_CITY", "Bengaluru")
-        max_results = int(os.getenv("BOOKYOURSHOW_MAX_RESULTS", "50"))
+        max_results = int(os.getenv("BOOKYOURSHOW_MAX_RESULTS", "200"))
         try:
             return _response(start_response, "200 OK", sync_movies(city, max_results))
         except Exception as exc:  # keep the endpoint response JSON for the importer

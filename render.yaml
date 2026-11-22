@@ -11,7 +11,7 @@ services:
       - key: BOOKYOURSHOW_CITY
         value: "Bengaluru"
       - key: BOOKYOURSHOW_MAX_RESULTS
-        value: "50"
+        value: "200"
       - key: BOOKYOURSHOW_RUN_TIMEOUT_SECONDS
         value: "600"
       - key: BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS

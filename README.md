@@ -11,10 +11,13 @@ Set `APIFY_API_TOKEN` in the environment. Never commit the token.
 Optional settings:
 
 - `BOOKYOURSHOW_CITY` (default: `Bengaluru`)
-- `BOOKYOURSHOW_MAX_RESULTS` (default: `50`)
+- `BOOKYOURSHOW_MAX_RESULTS` (default: `200`)
 - `BOOKYOURSHOW_RUN_TIMEOUT_SECONDS` (default: `600`)
 - `BOOKYOURSHOW_HTTP_TIMEOUT_SECONDS` (default: `900`)
 - `BOOKYOURSHOW_SYNC_KEY` to protect the sync endpoint
+
+The service keeps movie records only, excludes listings with Indian-language
+metadata, and stores one record per movie rather than one record per showtime.
 
 ## Run a snapshot
 
