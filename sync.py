@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -42,11 +43,10 @@ def _is_non_indian_movie(item: dict[str, Any]) -> bool:
     languages = item.get("languages")
     if not isinstance(languages, list):
         return True
-    normalized = {
-        str(language).strip().casefold()
-        for language in languages
-        if str(language).strip()
-    }
+    normalized = set()
+    for language in languages:
+        parts = re.split(r"[,/&]|\band\b", str(language).casefold())
+        normalized.update(part.strip() for part in parts if part.strip())
     return not normalized.intersection(INDIAN_LANGUAGE_NAMES)
 
 
