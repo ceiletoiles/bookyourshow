@@ -39,7 +39,7 @@ def _token() -> str:
 
 
 def _is_non_indian_movie(item: dict[str, Any]) -> bool:
-    """Exclude listings whose BookMyShow language metadata identifies Indian cinema."""
+    """Keep movies with at least one non-Indian audio language."""
     languages = item.get("languages")
     if not isinstance(languages, list):
         return True
@@ -47,7 +47,9 @@ def _is_non_indian_movie(item: dict[str, Any]) -> bool:
     for language in languages:
         parts = re.split(r"[,/&]|\band\b", str(language).casefold())
         normalized.update(part.strip() for part in parts if part.strip())
-    return not normalized.intersection(INDIAN_LANGUAGE_NAMES)
+    if not normalized:
+        return True
+    return any(language not in INDIAN_LANGUAGE_NAMES for language in normalized)
 
 
 def _run_actor(city: str, max_results: int) -> dict[str, Any]:
